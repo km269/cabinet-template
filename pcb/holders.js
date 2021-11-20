@@ -25,6 +25,6 @@ module.exports = (...positions) => {
       SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
     }
     # ${new Date().toISOString()}
-    ORDER BY ?positionLabel ?personLabel ?start`
+    ORDER BY ?position ?person ?start ?ps`
 }
 
