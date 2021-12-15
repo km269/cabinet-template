@@ -87,7 +87,7 @@ fi
 
 warnings=($(qsv search -s DOD . html/current.csv | qsv behead))
 if [ ${#warnings[@]} -gt 0 ]; then
-  echo "## Dead:"
+  echo "## Dead, but in current.csv:"
   printf '* %s\n' "${warnings[@]}"
 fi
 
@@ -109,7 +109,7 @@ if [ ${#warnings[@]} -gt 0 ]; then
   printf '* %s\n' "${warnings[@]}"
 fi
 
-warnings=($(qsv search -s dobp -v 11 $BIO_CSV | qsv select id,name,dob,dobp | qsv sort -N -s dobp | qsv table | qsv behead))
+warnings=($(qsv search -s dobp -v 11 $BIO_CSV | qsv join id - personID html/current.csv | qsv join position - title $ENUM_PS | qsv sort -N -s index | qsv select id,name,dob,dobp,position | uniq | qsv behead | qsv table))
 if [ ${#warnings[@]} -gt 0 ]; then
   echo "## Missing/short DOB:"
   printf '* %s\n' "${warnings[@]}"
