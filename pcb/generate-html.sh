@@ -104,13 +104,13 @@ if [ ${#warnings[@]} -gt 0 ]; then
   printf '* %s\n' "${warnings[@]}"
 fi
 
-warnings=($(qsv join --left-anti prev $EXTD_21 personID html/holders21.csv | qsv search -s start "^2" | qsv search -s prev . | qsv select prev,position,start | qsv sort -s start -R | qsv behead | qsv table))
+warnings=($(qsv join --left-anti prev $EXTD_21 personID html/holders21.csv | qsv search -s start "^2" | qsv search -s prev . | qsv select prev,position,start,personID | qsv sort -s start -R | qsv behead | qsv table))
 if [ ${#warnings[@]} -gt 0 ]; then
   echo "## Missing predecessors:"
   printf '* %s\n' "${warnings[@]}"
 fi
 
-warnings=($(qsv join --left-anti next $EXTD_21 personID html/holders21.csv | qsv search -s next . | qsv select next,position,end | qsv sort -s end -R | qsv behead | qsv table))
+warnings=($(qsv join --left-anti next $EXTD_21 personID html/holders21.csv | qsv search -s next . | qsv select next,position,end,personID | qsv sort -s end -R | qsv behead | qsv table))
 if [ ${#warnings[@]} -gt 0 ]; then
   echo "## Missing successors:"
   printf '* %s\n' "${warnings[@]}"
