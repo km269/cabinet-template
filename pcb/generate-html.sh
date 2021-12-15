@@ -11,7 +11,8 @@ EXTD_21=$(mktemp)
 PERSON_PROPS="en,P31,P18,P21,P27,P1559,P1477,P2561,P735,P734,P1950,P5056,P2652,P569,P19,P570,P22,P25,P26,P40,P3373,P39,P69,P511,P102,P3602,sitelinks"
 
 # Holders of each wanted position
-qsv select position wikidata/wanted-positions.csv |
+qsv cat rows wikidata/wanted-positions.csv wikidata/legislative-positions.csv |
+  qsv select position |
   qsv behead |
   xargs wd sparql pcb/holders.js -f csv > $TMPFILE
 sed -e 's#http://www.wikidata.org/entity/##g' -e 's/T00:00:00Z//g' $TMPFILE > $HOLDERS
@@ -58,6 +59,15 @@ qsv join person $TMPFILE id $BIO_CSV |
   qsv select title,name,person,start,end,gender,dob,dod,image,enwiki,prev,next |
   qsv rename position,person,personID,start,end,gender,DOB,DOD,image,enwiki,prev,next > $EXTD_21
 qsv select \!prev $EXTD_21 | qsv select \!next | uniq > html/holders21.csv
+
+qsv join position wikidata/legislative-positions.csv position $HOLDERS |
+  qsv select position,title,person,start,end,prev,next > $TMPFILE
+qsv join person $TMPFILE id $BIO_CSV |
+  qsv sort -s person |
+  qsv sort -s start |
+  qsv sort -s position |
+  qsv select title,name,person,start,end,gender,dob,dod,image,enwiki |
+  qsv rename position,person,personID,start,end,gender,DOB,DOD,image,enwiki > html/legislators.csv
 
 # Generate current.csv
 qsv search -s end -v . html/holders21.csv | qsv select \!end > html/current.csv
