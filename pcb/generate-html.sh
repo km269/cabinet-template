@@ -133,8 +133,10 @@ if [ ${#warnings[@]} -gt 0 ]; then
   printf '* %s\n' "${warnings[@]}"
 fi
 
-warnings=($(qsv join position $ENUM_PS position $UNDATED | qsv sort -R -s birth | qsv sort -N -s index | qsv select title,person,personLabel,birth,death | qsv behead | qsv table))
+warnings=($(qsv join --left-anti person $UNDATED  id $BIO_CSV | qsv join position $ENUM_PS position - | qsv sort -R -s birth | qsv sort -N -s index | qsv select title,person,personLabel,birth,death | qsv behead | qsv table))
 if [ ${#warnings[@]} -gt 0 ]; then
   echo "## Undated:"
-  printf '* %s\n' "${warnings[@]}"
+  echo '```'
+  printf '%s\n' "${warnings[@]}"
+  echo '```'
 fi
