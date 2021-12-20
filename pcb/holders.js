@@ -64,6 +64,6 @@ module.exports = (...positions) => {
       )
     }
     # ${new Date().toISOString()}
-    ORDER BY ?position ?person ?start ?ps`
+    ORDER BY ?position ?person ?start ?end ?ps`
 }
 
