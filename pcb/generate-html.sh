@@ -4,11 +4,40 @@ TMPFILE=$(mktemp)
 HOLDERS=$(mktemp)
 UNDATED=$(mktemp)
 RAWBIOS=$(mktemp)
+RAWPOSN=$(mktemp)
 BIO_CSV=$(mktemp)
 ENUM_PS=$(mktemp)
 EXTD_21=$(mktemp)
 
 PERSON_PROPS="en,P31,P18,P21,P27,P1559,P1477,P2561,P735,P734,P1950,P5056,P2652,P569,P19,P570,P22,P25,P26,P40,P3373,P39,P69,P511,P102,P3602,sitelinks"
+POSITION_PROPS="en,P571,P576,P580,P582,P1308,P17,P1001,P2354,P2098,P1365,P1366,P155,P156,sitelinks"
+
+# Data about each wanted position
+qsv enum wikidata/wanted-positions.csv > $ENUM_PS
+qsv select position wikidata/wanted-positions.csv |
+  qsv sort |
+  qsv behead |
+  wd data --props $POSITION_PROPS --simplify --time-converter simple-day --keep qualifiers,nontruthy,ranks,nondeprecated,richvalues > $RAWPOSN
+
+# TODO: compare P1308 (officeholders) with P39s
+jq -r 'def highest(array): (array | sort_by(.rank) | reverse | first.value);
+  [
+    .id,
+    .labels.en,
+    highest(.claims.P17),
+    highest(.claims.P1001),
+    highest(.claims.P2098),
+    highest(.claims.P2354),
+    highest([.claims.P571,  .claims.P580] | flatten).time,
+    highest([.claims.P576,  .claims.P582] | flatten).time,
+    highest([.claims.P1365, .claims.P155] | flatten).time,
+    highest([.claims.P1366, .claims.P156] | flatten).time,
+    (try (.sitelinks.enwiki) catch null)
+  ] | @csv' $RAWPOSN |
+  qsv rename 'id,position,country,jurisdiction,deputy,list,start,end,before,after,enwiki' |
+  qsv join position $ENUM_PS id - |
+  qsv sort -N -s index |
+  qsv select 4- > html/positions.csv
 
 # Holders of each wanted position
 qsv cat rows wikidata/wanted-positions.csv wikidata/legislative-positions.csv |
@@ -45,11 +74,7 @@ jq -r 'def highest(array): (array | sort_by(.rank) | reverse | first.value);
   ] | @csv' $RAWBIOS |
   sed -e 's/Q6581097/male/' -e 's/Q6581072/female/' -e 's/Q1052281/female/' >> $BIO_CSV
 
-# TODO: other positions
-# TODO: relations
-
 # Generate holders21.csv, keeping position order from wanted-positions
-qsv enum wikidata/wanted-positions.csv > $ENUM_PS
 qsv join position $ENUM_PS position $HOLDERS |
   qsv select index,position,title,person,start,end,prev,next > $TMPFILE
 qsv join person $TMPFILE id $BIO_CSV |
