@@ -34,7 +34,7 @@ jq -r 'def highest(array): (array | sort_by(.rank) | reverse | first.value);
     highest([.claims.P1366, .claims.P156] | flatten),
     (try (.sitelinks.enwiki) catch null)
   ] | @csv' $RAWPOSN |
-  qsv rename 'id,position,country,jurisdiction,deputy,list,start,end,before,after,enwiki' |
+  qsv rename -n 'id,position,country,jurisdiction,deputy,list,start,end,before,after,enwiki' |
   qsv join position $ENUM_PS id - |
   qsv sort -N -s index |
   qsv select 4- > html/positions.csv
