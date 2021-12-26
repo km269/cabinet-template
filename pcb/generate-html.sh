@@ -30,8 +30,8 @@ jq -r 'def highest(array): (array | sort_by(.rank) | reverse | first.value);
     highest(.claims.P2354),
     highest([.claims.P571,  .claims.P580] | flatten).time,
     highest([.claims.P576,  .claims.P582] | flatten).time,
-    highest([.claims.P1365, .claims.P155] | flatten).time,
-    highest([.claims.P1366, .claims.P156] | flatten).time,
+    highest([.claims.P1365, .claims.P155] | flatten),
+    highest([.claims.P1366, .claims.P156] | flatten),
     (try (.sitelinks.enwiki) catch null)
   ] | @csv' $RAWPOSN |
   qsv rename 'id,position,country,jurisdiction,deputy,list,start,end,before,after,enwiki' |
