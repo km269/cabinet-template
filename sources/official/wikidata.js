@@ -32,11 +32,11 @@ module.exports = function () {
             OPTIONAL { ?ref pr:P813  ?sourceDate }
           }
 
-          OPTIONAL { ?item rdfs:label ?wdLabel FILTER(LANG(?wdLabel) = "en") }
+          OPTIONAL { ?item rdfs:label ?wdLabel FILTER(LANG(?wdLabel) = "${meta.source.lang.code}") }
           BIND(COALESCE(?sourceName, ?wdLabel) AS ?name)
 
-          OPTIONAL { ?positionItem wdt:P1705  ?nativeLabel   FILTER(LANG(?nativeLabel)   = "en") }
-          OPTIONAL { ?positionItem rdfs:label ?positionLabel FILTER(LANG(?positionLabel) = "en") }
+          OPTIONAL { ?positionItem wdt:P1705  ?nativeLabel   FILTER(LANG(?nativeLabel)   = "${meta.source.lang.code}") }
+          OPTIONAL { ?positionItem rdfs:label ?positionLabel FILTER(LANG(?positionLabel) = "${meta.source.lang.code}") }
           BIND(COALESCE(?statedName, ?nativeLabel, ?positionLabel) AS ?position)
         }
         # ${new Date().toISOString()}
