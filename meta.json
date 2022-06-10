@@ -4,8 +4,6 @@
         "id": "Qxxx"
     },
     "cabinet": {
-        "id": "Qxxx",
-        "start": "YYYY-MM-DD",
         "parent": "Qxxx"
     }
 }
